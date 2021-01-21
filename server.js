@@ -69,6 +69,7 @@ io.on('connection', function(socket) {
         players[socket.id].ready = true
 
         if (players.filter)
+        ;
     })
   //});
 
