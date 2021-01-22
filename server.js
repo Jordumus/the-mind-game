@@ -43,9 +43,10 @@ server.listen(5000, function() {
   var players = {};
   var playerCards = {};
   let connectedPlayers = 0;
-  var currentLevel = 8;
+  var currentLevel = 1;
   var playedCards = [];
   var drawnCards = [];
+var lastIndex = 0;
 
 io.on('connection', function(socket) {
 
@@ -57,10 +58,10 @@ io.on('connection', function(socket) {
           ready: false
       };
 
-        io.sockets.emit("message", "Player: " + socket.id + " disconnected.");
+        io.sockets.emit("message", `Player: ${socket.id} disconnected. \n players: ${connectedPlayers}`);
         countPlayers();
         //connectedPlayers--;
-        io.sockets.emit("message", "players: " + connectedPlayers);
+        //io.sockets.emit("message", "players: " + connectedPlayers);
       });
 
     socket.on('new player', function() {
@@ -73,7 +74,7 @@ io.on('connection', function(socket) {
         countPlayers();
 
         //connectedPlayers = //Object.filter(players, x => x.username != "").length;
-        io.sockets.emit("message", "players: " + connectedPlayers);
+        io.sockets.emit("message", "New player joined. players: " + connectedPlayers);
     });
 
     //New username set
@@ -86,26 +87,39 @@ io.on('connection', function(socket) {
         //connectedPlayers++;
         countPlayers();
 
-        io.sockets.emit("message", "players: " + connectedPlayers);
+        io.sockets.emit("message", `Player: ${username} connected. players: ${connectedPlayers}`);
     });
 
     socket.on('start game', () => {
         players[socket.id].ready = true;
 
         var playersNotReady = 0;
+        var totalPlayers =0
         //Object.filter(players,x => !x.ready).length;
         for (player in players){
-          if (players[player].username != "" && !players[player].ready)
-            playersNotReady++;
+          if (players[player].username != ""){
+            totalPlayers++;
+
+            if (!players[player].ready)
+              playersNotReady++;
+          }
         }
 
-        if (playersNotReady != 0){
+        // if (totalPlayers <= 1){
+        //   io.sockets.emit("message", `You can't play the game on your own. Wait for others to connect`);
+        //   return;
+        // }
+
+        if (playersNotReady != 0 ){
           io.sockets.emit("message", playersNotReady + " not ready");
           return;
         }
 
         io.sockets.emit("message", "Everyone ready!");
         initGame();
+
+        //Let everyone know we are starting!
+        io.sockets.emit("game started","Let's go!");
 
         sendCardsToPlayers();
 
@@ -125,7 +139,6 @@ io.on('connection', function(socket) {
         //Remove from this players deck.
         playerCards[socket.id].splice(playerCards[socket.id].indexOf(card), 1);
 
-
         //Wanna be fancy? You can combine the above 2 lines by:
         //playedCards.push(
           //playerCards[socket.id].splice(playerCards[socket.id].indexOf(card), 1)
@@ -136,13 +149,33 @@ io.on('connection', function(socket) {
 
         //Show the played card to the players
         io.sockets.emit("card played", card);
-        
+        console.log(`card played: ${card} by ${players[socket.id].username}`);
+
         //We should check if the game is lost..
+        if (card != drawnCards[lastIndex]){
+          console.log(`They lost!`);
+          console.log(`played card: ${card}, lastIndex: ${lastIndex}, card of index: ${drawnCards[lastIndex]}`);
+        
+          roundLost();
+        }
+
+        lastIndex++;
 
         //And also if this round is won..
         if (playedCards.length == drawnCards.length)
         {
-          ;
+          //Let everyone know the round is over
+          io.sockets.emit("round over","Let's go next!");
+          console.log("round over");
+
+          //Nobody is ready anymore..
+          for (player in players) {
+            players[player].ready = false;
+          }
+
+          //Increase level.
+          currentLevel++;
+        
         }
     })
 
@@ -176,6 +209,7 @@ var initGame = function() {
   //Prepare empty decks for players:
   playerCards = {};
   drawnCards = [];
+  lastIndex = 0;
 
   for (player in players) {
     var tObj = players[player];
@@ -221,6 +255,9 @@ var initGame = function() {
     playerCards[player] =  playerCards[player].sort((a,b) => a - b);
   }
 
+  //Sort the drawncards:
+  drawnCards = drawnCards.sort((a,b) => a - b);
+
   console.log(playerCards);
 }
 
@@ -232,4 +269,13 @@ var sendCardsToPlayers = function(){
     //console.log(playerCards[player]);
 
   }
+}
+
+var roundLost = function(){
+
+  playerCards = {};
+
+  io.sockets.emit("round lost",`Round lost, next card was: ${drawnCards[lastIndex]}`);
+
+
 }
