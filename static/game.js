@@ -31,6 +31,14 @@ socket.on('players', function(data) {
     console.log(data);
 });
 
+socket.on("card played", function(data) {
+
+    //It would be nice if we could draw on a canvas here and simulate cards on 
+    //top of each other with a slight rotation.. But for now..
+
+    document.getElementById("lastCard").innerText = data;
+});
+
 socket.emit('new player');
 
 function sendUsername(){

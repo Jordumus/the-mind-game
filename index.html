@@ -15,6 +15,15 @@
         font-size: 2em;
         background-color: red;
       }
+      #lastCard {
+        height: 100px;
+        width: 100px;
+        margin: 25px;
+        padding: 10px;
+        border: solid 2px black;
+        font-size: 5em;
+text-align: center;
+      }
     </style>
     <script src="/socket.io/socket.io.js"></script>
   </head>
@@ -27,6 +36,7 @@
     <button onClick="sendReady()">I'm Ready, let's play!</button>
     <p id="message"></p>
     <div id="cards"></div>
+    <div id="lastCard"></div>
   </body>
   <script src="/static/game.js"></script>
 </html>

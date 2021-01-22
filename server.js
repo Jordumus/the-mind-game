@@ -135,7 +135,8 @@ io.on('connection', function(socket) {
         sendCardsToPlayers();
 
         //Show the played card to the players
-
+        io.sockets.emit("card played", card);
+        
         //We should check if the game is lost..
 
         //And also if this round is won..
