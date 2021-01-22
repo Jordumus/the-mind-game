@@ -61,7 +61,7 @@ io.on('connection', function(socket) {
           ready: false
       };
 
-        io.sockets.emit("message", `Player: ${players[socket.id]} disconnected. \n players: ${connectedPlayers}`);
+        io.sockets.emit("message", `Player: ${players[socket.id].username} disconnected. \n players: ${connectedPlayers}`);
         countPlayers();
         //connectedPlayers--;
         //io.sockets.emit("message", "players: " + connectedPlayers);
@@ -102,10 +102,10 @@ io.on('connection', function(socket) {
         //We can't start if a game is already in progress:
         if (gameBusy)
         {
-          io.to(socket.id).emit("message", playersNotReady + " not ready");
+          io.to(socket.id).emit("message", "Game already in progress");
           return;
         }
-        
+
         //Object.filter(players,x => !x.ready).length;
         for (player in players){
           if (players[player].username != ""){
@@ -292,12 +292,21 @@ var endRound = function() {
 var sendCardsToPlayers = function(){
 
   //Get number of cards for each user:
-  for (player in playerCards) {
+  // var cardsPerUser = {}
+  // for (player in playerCards) {
 
-  }
+  //   cardsPerUser[player] = playerCards[player].length;
+  // }
 
   for (player in playerCards){
-    io.to(player).emit("cards", playerCards[player]);
+
+    var data = {}
+    data["own"] =  playerCards[player];
+    data["others"] = [3,2,4];
+
+    io.to(player).emit("cards", data);
+
+
     //console.log(`sending to player: ${player}, cards:`)
     //console.log(playerCards[player]);
 
@@ -308,5 +317,5 @@ var roundLost = function(){
 
   io.sockets.emit("round lost",`Round lost, next card was: ${drawnCards[lastIndex]}`);
 
-  currentLevel = 0;
+  currentLevel = 1;
 }

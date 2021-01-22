@@ -1,3 +1,13 @@
+var cardColors = [
+    "#FF9797",
+    "#97C8FF",
+    "#97FFA9",
+    "#FFFF97",
+    "#FC836A",
+    "#FCBD6A",
+    "#E397FF",
+]
+
 var socket = io();
 socket.on('message', function (data) {
     console.log(data);
@@ -6,10 +16,13 @@ socket.on('message', function (data) {
 
 socket.on('cards', function (data) {
 
-    var htmlString = "";
+    //Own cards first:
+    //var htmlString = "";
     var newHtmlString = "";
     var first = true;
-    for (card in data) {
+    var ownCards = data.own;
+    var otherCards = data.others;
+    for (card in ownCards) {
 
         /*htmlString += `<button class="card" 
             value='${data[card]}'
@@ -19,13 +32,14 @@ socket.on('cards', function (data) {
 
         newHtmlString += `<div 
             class="playcard ${(first)? "" : "cardDisabled"}" 
-            ${(first) ? 'onClick="sendCard('+data[card]+')"':""}><p>${data[card]}</p></div>`;
+            ${(first) ? 'onClick="sendCard('+ownCards[card]+')"':""}><p>${ownCards[card]}</p></div>`;
 
         first = false;
     }
 
-    document.getElementById("cards").innerHTML = htmlString + newHtmlString;
+    document.getElementById("cards").innerHTML = /*htmlString +*/ newHtmlString;
 
+    
 });
 
 socket.on('game started', function () {
@@ -66,6 +80,8 @@ socket.on("card played", function (data) {
     document.getElementById("lastCard").innerText = data.card;
     drawCardOnCanvas(data.card, data.lost);
 
+    drawOtherCardsOnCanvas([7,7,7,7,7,7]);
+
 
 });
 
@@ -86,17 +102,111 @@ function sendCard(cardNumber) {
     socket.emit('card played', cardNumber);
 }
 
-function degrees_to_radians(degrees)
-{
+function degrees_to_radians(degrees) {
   var pi = Math.PI;
   return degrees * (pi/180);
 }
 
 function cleanCanvas(){
+
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
 
     context.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function drawOtherCardsOnCanvas(otherCards){
+
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+
+    //Let's clear the sides first:
+    context.clearRect(0, 0, canvas.width, 100);
+    context.clearRect(0, 0, 100, canvas.height);
+    context.clearRect(canvas.width-100, 0, 100, canvas.height);
+    context.clearRect(0, canvas.height - 100, canvas.width, 100);
+
+    var nmbOtherPlayers = otherCards.length;
+
+    //Let's start with the left side..
+    switch (nmbOtherPlayers) {
+        case 1:
+            drawCardRegion(50, 0, canvas.width - 100, 100, otherCards[0], cardColors[0]);
+            break;
+        case 2:
+            drawCardRegion(0, 50, 100, canvas.height - 100, otherCards[0], cardColors[0]);
+            drawCardRegion(canvas.width - 20, 50, 100, canvas.height - 100, otherCards[1], cardColors[1]);
+            break;
+        case 3:
+            drawCardRegion(0, 50, 100, canvas.height - 100, otherCards[0], cardColors[0]);
+            drawCardRegion(canvas.width - 20, 50, 100, canvas.height - 100, otherCards[1], cardColors[1]);
+            drawCardRegion(50, 0, canvas.width - 100, 100, otherCards[2], cardColors[2]);
+            break;
+        //TO DO - continue for 5, 6 and 7
+        case 4:
+            drawCardRegion(0, 50, 100, canvas.height - 100, otherCards[0], cardColors[0]);
+            drawCardRegion(canvas.width - 20, 50, 100, canvas.height - 100, otherCards[1], cardColors[1]);
+            drawCardRegion(50, 0, (canvas.width - 100) / 2, 100, otherCards[2], cardColors[2]);
+            drawCardRegion(50 + ((canvas.width - 100)/2), 0, (canvas.width - 100) / 2, 100, otherCards[3], cardColors[3]);
+            break;
+
+        case 5:
+            drawCardRegion(0, 50, 100, (canvas.height - 100)/2, otherCards[0], cardColors[0]);
+            drawCardRegion(0, 50+((canvas.height-100)/2), 100, (canvas.height - 100)/2, otherCards[1], cardColors[1]);
+
+            drawCardRegion(canvas.width - 20, 50, 100, (canvas.height - 100)/2, otherCards[2], cardColors[2]);
+            drawCardRegion(canvas.width - 20, 50+((canvas.height-100)/2), 100, (canvas.height - 100)/2, otherCards[3], cardColors[3]);
+
+            drawCardRegion(50, 0, canvas.width - 100, 100, otherCards[4], cardColors[4]);
+            break;
+        
+        case 6:
+            drawCardRegion(0, 50, 100, (canvas.height - 100)/2, otherCards[0], cardColors[0]);
+            drawCardRegion(0, 50+((canvas.height-100)/2), 100, (canvas.height - 100)/2, otherCards[1], cardColors[1]);
+
+            drawCardRegion(canvas.width - 20, 50, 100, (canvas.height - 100)/2, otherCards[2], cardColors[2]);
+            drawCardRegion(canvas.width - 20, 50+((canvas.height-100)/2), 100, (canvas.height - 100)/2, otherCards[3], cardColors[3]);
+
+            drawCardRegion(50, 0, (canvas.width - 100) / 2, 100, otherCards[4], cardColors[4]);
+            drawCardRegion(50 + ((canvas.width - 100)/2), 0, (canvas.width - 100) / 2, 100, otherCards[5], cardColors[5]);
+            break;
+    }
+}
+
+function drawCardRegion(x,y,width, height, amount, color){
+
+    var interspace = 10;
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+
+    var horizontal = (width > height);
+
+    var usefulSize = (horizontal) ? width : height;
+
+    //Let's try to calculate our card width.
+    var cardWidth = (usefulSize - (interspace*amount) ) / amount;
+    cardWidth = (cardWidth > 50) ? 50 : cardWidth;
+
+    //Calculate our startpoint for drawing
+    var usedWidth = (interspace*amount) + (cardWidth * amount);
+    var startPoint = (usefulSize - usedWidth) / 2;
+
+    startPoint += (horizontal) ? x: y;
+
+    context.fillStyle = color;
+
+    for (var i = 0; i < amount; i++){
+
+        if (horizontal)
+            context.fillRect(startPoint, y, cardWidth, 20);
+        else
+            context.fillRect(x, startPoint, 20, cardWidth);
+
+        startPoint += cardWidth + interspace;
+
+    }
+
+
 }
 
 function drawCardOnCanvas(cardnumber, lost) {
@@ -156,86 +266,4 @@ function drawCardOnCanvas(cardnumber, lost) {
         context.fillText(cardnumber,  - 30,  0);
 
         context.restore();
-
-//     var width = 75;//canvas.width;
-// var height = 125;//canvas.height;
-
-// context.fillStyle = '#112F41';
-// context.fillRect(0, 0, width, height);
-
-// context.globalCompositeOperation = 'screen';
-// context.lineWidth = 10;
-
-// tapufini();
-
-// context.globalCompositeOperation = "source-over";
-//  //Clear surroundings:
-//  context.fillStyle = '#FFF';
-//  context.fillRect(75, 0, canvas.width - 75, canvas.height);
-//  context.fillRect(0, 125, canvas.width, canvas.height );
-
-
-// function tapufini() {
-//   // Vars
-//   var amplitude = rangeFloor(10, 20);
-//   var frequency = rangeFloor(30, 70);
-//   var colors = [
-//     '#FFB713',
-//     '#009F45',
-//     '#FF3A5C',
-//     '#4646DF',
-//     '#F44918',
-//     '#FEAC00',
-//     '#FF5630',
-//     '#396C7D',
-//     '#83757D',
-//     '#2C3F54',
-//     '#F0F0EC',
-//     '#2A2A41',
-//     '#766B4F',
-//     '#F4AAAB',
-//     '#CF3B45',
-//     '#4F94CF',
-//     '#E51D20',
-//     '#2C416E',
-//     '#EE751A',
-//     '#FECF1A',
-//   ];
-
-//   let x = 0;
-
-//   while (x < width + 100) {
-//     let color = pick(colors);
-//     drawSine(x, color);
-//     x = x + 17;
-//   }
-
- 
-
-//   // FUNCTIONS ************************
-
-//   function drawSine(x, color) {
-//     let waveY = -10;
-//     context.beginPath();
-//     while (waveY < height + 10) {
-//       // Draw a very short line to the next point output by the sine function
-//       let waveX = x + amplitude * Math.sin(waveY / frequency);
-//       context.lineTo(waveX, waveY);
-//       waveY++;
-//     }
-//     context.strokeStyle = color;
-//     context.stroke();
-//   }
-
-//   function rangeFloor(min, max) {
-//     // Return a random whole number between min and max
-//     return Math.floor(Math.random() * (max - min) + min);
-//   }
-
-//   function pick(array) {
-//     // Pick a random item out of an array
-//     if (array.length === 0) return undefined;
-//     return array[rangeFloor(0, array.length)];
-//   }
-// }
 }
