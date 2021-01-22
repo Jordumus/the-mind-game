@@ -25,6 +25,7 @@ socket.on('cards', function (data) {
 
 socket.on('game started', function () {
     document.getElementById("btnReady").hidden = true;
+    cleanCanvas();
 });
 
 socket.on('round over', function () {
@@ -58,7 +59,7 @@ socket.on("card played", function (data) {
     //top of each other with a slight rotation.. But for now..
 
     document.getElementById("lastCard").innerText = data;
-    drawCardOnCanvas();
+    drawCardOnCanvas(data);
 
 
 });
@@ -86,11 +87,18 @@ function degrees_to_radians(degrees)
   return degrees * (pi/180);
 }
 
+function cleanCanvas(){
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+}
+
 function drawCardOnCanvas(cardnumber) {
 
 
     //temp:
-    cardnumber = Math.floor((Math.random()*100) + 1);
+    //cardnumber = Math.floor((Math.random()*100) + 1);
 
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
@@ -100,8 +108,14 @@ function drawCardOnCanvas(cardnumber) {
     var width = 150;
     var height = 250;
 
+    //small layer
+    context.fillStyle = "rgba(255, 255, 255, 0.5)";
+    context.fillRect(0,0,canvas.width, canvas.height);
+
+    context.fillStyle = '#112F41';
     //Calculate random rotation between -15° and 15°
-    var rotation = Math.floor((Math.random() * 30) - 15);
+    var rotation = Math.floor((Math.random() * 300) - 150);
+    rotation /= 10;
     context.save();
     context.translate(canvas.width / 2, canvas.height / 2);
  //context.rotate(-Math.PI/2);
@@ -123,11 +137,13 @@ function drawCardOnCanvas(cardnumber) {
 
         //Draw the text..
         context.fillStyle = "#FFF";
-        context.font = ""
+        
         context.fillText(cardnumber, (-width / 2) + 10, (-height / 2) + 25);
         context.fillText(cardnumber, (-width / 2) + 10, (height / 2) - 10);
         context.fillText(cardnumber, (width / 2) - 20, (-height / 2) + 25);
         context.fillText(cardnumber, (width / 2) - 20, (height / 2) - 10);
+        context.font = "45px arial";
+        context.fillText(cardnumber,  - 30,  0);
 
         context.restore();
 

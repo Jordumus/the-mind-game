@@ -58,7 +58,7 @@ io.on('connection', function(socket) {
           ready: false
       };
 
-        io.sockets.emit("message", `Player: ${socket.id} disconnected. \n players: ${connectedPlayers}`);
+        io.sockets.emit("message", `Player: ${players[socket.id]} disconnected. \n players: ${connectedPlayers}`);
         countPlayers();
         //connectedPlayers--;
         //io.sockets.emit("message", "players: " + connectedPlayers);
@@ -149,7 +149,7 @@ io.on('connection', function(socket) {
 
         //Show the played card to the players
         io.sockets.emit("card played", card);
-        console.log(`card played: ${card} by ${players[socket.id].username}`);
+        console.log(`card played: ${card} by ${players[socket.id].username}. \n ${playedCards.length} of ${drawnCards.length} played.`);
 
         //We should check if the game is lost..
         if (card != drawnCards[lastIndex]){
@@ -210,6 +210,7 @@ var initGame = function() {
   playerCards = {};
   drawnCards = [];
   lastIndex = 0;
+  playedCards = [];
 
   for (player in players) {
     var tObj = players[player];
@@ -277,5 +278,5 @@ var roundLost = function(){
 
   io.sockets.emit("round lost",`Round lost, next card was: ${drawnCards[lastIndex]}`);
 
-
+  currentLevel = 0;
 }
