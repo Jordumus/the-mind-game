@@ -39,6 +39,8 @@ socket.on('cards', function (data) {
 
     document.getElementById("cards").innerHTML = /*htmlString +*/ newHtmlString;
 
+    //Draw other cards.
+    drawOtherCardsOnCanvas(otherCards);
     
 });
 
@@ -77,10 +79,10 @@ socket.on("card played", function (data) {
     //It would be nice if we could draw on a canvas here and simulate cards on 
     //top of each other with a slight rotation.. But for now..
 
-    document.getElementById("lastCard").innerText = data.card;
+    //document.getElementById("lastCard").innerText = data.card;
     drawCardOnCanvas(data.card, data.lost);
 
-    drawOtherCardsOnCanvas([7,7,7,7,7,7]);
+    
 
 
 });

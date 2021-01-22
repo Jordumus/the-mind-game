@@ -155,10 +155,6 @@ io.on('connection', function(socket) {
           //playerCards[socket.id].splice(playerCards[socket.id].indexOf(card), 1)
         //)
 
-        //Send the decks back to the players, just in case.
-        sendCardsToPlayers();
-
-
         var lost = false;
         //We should check if the game is lost..
         if (card != drawnCards[lastIndex]){
@@ -177,6 +173,8 @@ io.on('connection', function(socket) {
         io.sockets.emit("card played", {card: card, lost:lost});
         console.log(`card played: ${card} by ${players[socket.id].username}. \n ${playedCards.length} of ${drawnCards.length} played.`);
 
+        //Send the decks back to the players, just in case.
+        sendCardsToPlayers();
 
         //And also if this round is won..
         if (playedCards.length == drawnCards.length)
@@ -302,10 +300,25 @@ var sendCardsToPlayers = function(){
 
     var data = {}
     data["own"] =  playerCards[player];
-    data["others"] = [3,2,4];
+
+    // var tempRandom = Math.floor((Math.random() * 6) + 1);
+     data["others"] = [];
+    // for (var i = 0; i < tempRandom; i++){
+
+    //   data["others"].push(Math.floor((Math.random() * 7) + 1));
+    // }
+    //data["others"] = [3,2,4];
+
+    for (subplayer in playerCards){
+
+      if (subplayer == player)
+        continue;
+
+      data["others"].push(playerCards[subplayer].length);
+    }
+
 
     io.to(player).emit("cards", data);
-
 
     //console.log(`sending to player: ${player}, cards:`)
     //console.log(playerCards[player]);
