@@ -58,8 +58,8 @@ socket.on("card played", function (data) {
     //It would be nice if we could draw on a canvas here and simulate cards on 
     //top of each other with a slight rotation.. But for now..
 
-    document.getElementById("lastCard").innerText = data;
-    drawCardOnCanvas(data);
+    document.getElementById("lastCard").innerText = data.card;
+    drawCardOnCanvas(data.card, data.lost);
 
 
 });
@@ -94,8 +94,10 @@ function cleanCanvas(){
     context.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-function drawCardOnCanvas(cardnumber) {
+function drawCardOnCanvas(cardnumber, lost) {
 
+    //Check for lost
+    lost = lost ?? false;
 
     //temp:
     //cardnumber = Math.floor((Math.random()*100) + 1);
@@ -103,7 +105,6 @@ function drawCardOnCanvas(cardnumber) {
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
 
-    context.fillStyle = '#112F41';
 
     var width = 150;
     var height = 250;
@@ -112,7 +113,11 @@ function drawCardOnCanvas(cardnumber) {
     context.fillStyle = "rgba(255, 255, 255, 0.5)";
     context.fillRect(0,0,canvas.width, canvas.height);
 
-    context.fillStyle = '#112F41';
+    if (lost)
+        context.fillStyle = '#DF1141';
+    else
+        context.fillStyle = '#112F41';
+
     //Calculate random rotation between -15° and 15°
     var rotation = Math.floor((Math.random() * 300) - 150);
     rotation /= 10;

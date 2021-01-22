@@ -147,19 +147,24 @@ io.on('connection', function(socket) {
         //Send the decks back to the players, just in case.
         sendCardsToPlayers();
 
-        //Show the played card to the players
-        io.sockets.emit("card played", card);
-        console.log(`card played: ${card} by ${players[socket.id].username}. \n ${playedCards.length} of ${drawnCards.length} played.`);
 
+        var lost = false;
         //We should check if the game is lost..
         if (card != drawnCards[lastIndex]){
           console.log(`They lost!`);
           console.log(`played card: ${card}, lastIndex: ${lastIndex}, card of index: ${drawnCards[lastIndex]}`);
         
+          lost = true;
+
           roundLost();
         }
 
         lastIndex++;
+
+        //Show the played card to the players
+        io.sockets.emit("card played", {card: card, lost:lost});
+        console.log(`card played: ${card} by ${players[socket.id].username}. \n ${playedCards.length} of ${drawnCards.length} played.`);
+
 
         //And also if this round is won..
         if (playedCards.length == drawnCards.length)
