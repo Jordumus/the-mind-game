@@ -7,19 +7,24 @@ socket.on('message', function (data) {
 socket.on('cards', function (data) {
 
     var htmlString = "";
+    var newHtmlString = "";
     var first = true;
     for (card in data) {
 
-        htmlString += `<button class="card" 
+        /*htmlString += `<button class="card" 
             value='${data[card]}'
             onClick='sendCard(${data[card]})'
             ${(first) ? "" : "disabled='disabled'"}>
-                ${data[card]}</button>`;
+                ${data[card]}</button>`;*/
+
+        newHtmlString += `<div 
+            class="playcard ${(first)? "" : "cardDisabled"}" 
+            ${(first) ? 'onClick="sendCard('+data[card]+')"':""}><p>${data[card]}</p></div>`;
 
         first = false;
     }
 
-    document.getElementById("cards").innerHTML = htmlString;
+    document.getElementById("cards").innerHTML = htmlString + newHtmlString;
 
 });
 

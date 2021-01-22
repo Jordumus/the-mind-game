@@ -1,0 +1,81 @@
+body {
+    background-color: #BBB;
+  }
+
+  canvas {
+    width: 800px;
+    height: 600px;
+    border: 5px solid black;
+  }
+
+  .card {
+    height: 100px;
+    width: 75px;
+    font-size: 2em;
+    background-color: red;
+  }
+
+  #lastCard {
+    height: 100px;
+    width: 200px;
+    margin: 25px;
+    padding: 10px;
+    border: solid 2px black;
+    font-size: 5em;
+    text-align: center;
+  }
+
+  #main {
+    width: 80%;
+    margin-left: 10%;
+    border: solid 2px black;
+    padding: 15px;
+    background-color: white;
+  }
+
+  #gamePart {
+    Width: 75%;
+    float: left;
+  }
+
+  aside {
+    width: 20%;
+    background-color: rgb(166, 187, 231);
+    height: 100%;
+    float: left;
+    padding-left: 50px;
+  }
+
+  .clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
+
+  .playcard {
+    display: inline-block;
+    width: 3.3em;
+    height: 4.6em;
+    border: 1px solid #666;
+    -moz-border-radius: .3em;
+    -webkit-border-radius: .3em;
+    -khtml-border-radius: .3em;
+    border-radius: .3em;
+    padding: .25em;
+    margin: 0 .5em .5em 0;
+    text-align: center;
+    font-size: 1.8em;
+    font-weight: normal;
+    font-family: Arial, sans-serif;
+    position: relative;
+    background-color: rgb(120, 168, 119);
+    -moz-box-shadow: .2em .2em .5em #333;
+    -webkit-box-shadow: 0.2em 0.2em 0.5em #333;
+    box-shadow: 0.2em 0.2em 0.5em #333;
+    cursor: pointer;
+  }
+
+  .cardDisabled {
+    cursor: auto;
+    background-color: #DDD;
+  }

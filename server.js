@@ -17,6 +17,8 @@ var io = socketIO(server);
 
 app.set('port', 5000);
 app.use('/static', express.static(__dirname + '/static'));
+//Connect the CSS folder to this server.
+app.use(express.static(path.join(__dirname, 'css')));
 
 // Routing
 app.get('/', function(request, response) {
@@ -47,6 +49,7 @@ server.listen(5000, function() {
   var playedCards = [];
   var drawnCards = [];
 var lastIndex = 0;
+var gameBusy = false;
 
 io.on('connection', function(socket) {
 
@@ -95,6 +98,14 @@ io.on('connection', function(socket) {
 
         var playersNotReady = 0;
         var totalPlayers =0
+
+        //We can't start if a game is already in progress:
+        if (gameBusy)
+        {
+          io.to(socket.id).emit("message", playersNotReady + " not ready");
+          return;
+        }
+        
         //Object.filter(players,x => !x.ready).length;
         for (player in players){
           if (players[player].username != ""){
@@ -156,6 +167,7 @@ io.on('connection', function(socket) {
         
           lost = true;
 
+          endRound();
           roundLost();
         }
 
@@ -173,10 +185,7 @@ io.on('connection', function(socket) {
           io.sockets.emit("round over","Let's go next!");
           console.log("round over");
 
-          //Nobody is ready anymore..
-          for (player in players) {
-            players[player].ready = false;
-          }
+          endRound();
 
           //Increase level.
           currentLevel++;
@@ -265,9 +274,27 @@ var initGame = function() {
   drawnCards = drawnCards.sort((a,b) => a - b);
 
   console.log(playerCards);
+
+  gameBusy = true;
+}
+
+var endRound = function() {
+
+  playerCards = {};
+  gameBusy = false;
+
+  //Nobody is ready anymore..
+  for (player in players) {
+    players[player].ready = false;
+  }
 }
 
 var sendCardsToPlayers = function(){
+
+  //Get number of cards for each user:
+  for (player in playerCards) {
+
+  }
 
   for (player in playerCards){
     io.to(player).emit("cards", playerCards[player]);
@@ -278,8 +305,6 @@ var sendCardsToPlayers = function(){
 }
 
 var roundLost = function(){
-
-  playerCards = {};
 
   io.sockets.emit("round lost",`Round lost, next card was: ${drawnCards[lastIndex]}`);
 

@@ -3,62 +3,15 @@
 <head>
   <title>A Multiplayer Game</title>
 
+  <link rel="stylesheet" type="text/css" href="/design.css"/>
   <style>
-
-    body {
-      background-color: #BBB;
-    }
-    canvas {
-      width: 800px;
-      height: 600px;
-      border: 5px solid black;
-    }
-
-    .card {
-      height: 100px;
-      width: 75px;
-      font-size: 2em;
-      background-color: red;
-    }
-
-    #lastCard {
-      height: 100px;
-      width: 200px;
-      margin: 25px;
-      padding: 10px;
-      border: solid 2px black;
-      font-size: 5em;
-      text-align: center;
-    }
-
-#main {
-  width: 80%;
-  margin-left: 10%;
-  border: solid 2px black;
-  padding: 15px;
-  background-color: white;
-}
-    #gamePart {
-      Width: 75%; 
-      float:left;
-    }
-    aside {width: 20%;
-    background-color: rgb(166, 187, 231);
-    height: 100%;
-    float:left;
-    padding-left: 50px;}
     
-    .clearfix::after {
-  content: "";
-  clear: both;
-  display: table;
-}
   </style>
   <script src="/socket.io/socket.io.js"></script>
 </head>
 
 <body>
-   
+
 
   <section id="main" class="clearfix">
     <section id="gamePart">
@@ -66,12 +19,14 @@
         <input type="text" name="username" id="username"></input></label>
       <button onClick="sendUsername()" id="btnUsername" value="send!">Send!</button><br />
       <button onClick="sendReady()" id="btnReady">I'm Ready, let's play!</button>
-      <br/>
+      <br />
       <canvas id="canvas" width="800" height="600"></canvas>
-      
+
       <p id="message"></p>
       <div id="cards"></div>
       <div id="lastCard"></div>
+
+      
     </section>
     <aside>
       <h1>Connected Players:</h1>
