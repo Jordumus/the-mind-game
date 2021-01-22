@@ -8,15 +8,25 @@
         height: 600px;
         border: 5px solid black;
       }
+
+      .card {
+        height: 100px;
+        width: 75px;
+        font-size: 2em;
+        background-color: red;
+      }
     </style>
     <script src="/socket.io/socket.io.js"></script>
   </head>
   <body>
-    <canvas id="canvas"></canvas>
+    <!-- <canvas id="canvas"></canvas> -->
 
-    <input type="text" id="username"></input>
+    <label for="username">Username: 
+    <input type="text" name="username" id="username"></input></label>
     <button onClick="sendUsername()" value="send!">Send!</button><br/>
-    <button onClick="sendReady()">Ready!</button>
+    <button onClick="sendReady()">I'm Ready, let's play!</button>
+    <p id="message"></p>
+    <div id="cards"></div>
   </body>
   <script src="/static/game.js"></script>
 </html>

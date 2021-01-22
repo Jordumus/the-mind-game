@@ -44,6 +44,9 @@ server.listen(5000, function() {
   var playerCards = {};
   let connectedPlayers = 0;
   var currentLevel = 8;
+  var playedCards = [];
+  var drawnCards = [];
+
 io.on('connection', function(socket) {
 
     //Handle the disconnection of a player:
@@ -96,17 +99,52 @@ io.on('connection', function(socket) {
             playersNotReady++;
         }
 
-        if (playersNotReady == 0){
-          io.sockets.emit("message", "Everyone ready!");
-          initGame();
-
-        }
-        else
+        if (playersNotReady != 0){
           io.sockets.emit("message", playersNotReady + " not ready");
-    })
-  //});
+          return;
+        }
 
-//io.on('')
+        io.sockets.emit("message", "Everyone ready!");
+        initGame();
+
+        sendCardsToPlayers();
+
+        
+        
+    })
+
+    socket.on('card played', (card) => {
+
+      //Check if this player has this card in his deck:
+      if (playerCards[socket.id].indexOf(card) == -1)
+        return;
+
+        //Add to played cards
+        playedCards.push(card);
+
+        //Remove from this players deck.
+        playerCards[socket.id].splice(playerCards[socket.id].indexOf(card), 1);
+
+
+        //Wanna be fancy? You can combine the above 2 lines by:
+        //playedCards.push(
+          //playerCards[socket.id].splice(playerCards[socket.id].indexOf(card), 1)
+        //)
+
+        //Send the decks back to the players, just in case.
+        sendCardsToPlayers();
+
+        //Show the played card to the players
+
+        //We should check if the game is lost..
+
+        //And also if this round is won..
+        if (playedCards.length == drawnCards.length)
+        {
+          ;
+        }
+    })
+
 
     
 
@@ -115,7 +153,7 @@ io.on('connection', function(socket) {
 var countPlayers = function(countReady){
   connectedPlayers = 0;
 
-  var countOnlyReady = countReady || false;
+  var countOnlyReady = countReady ?? false;
   //console.log(players);
 
   for (var player in players){
@@ -132,10 +170,11 @@ var countPlayers = function(countReady){
 var initGame = function() {
 
   var amtPlayers = 0//countPlayers(true);
-  var drawnCards = [];
+  //var drawnCards = [];
 
   //Prepare empty decks for players:
   playerCards = {};
+  drawnCards = [];
 
   for (player in players) {
     var tObj = players[player];
@@ -161,35 +200,35 @@ var initGame = function() {
       //Draw random card between 1 and 100 (inclusive)
       var drawnCard = 0;
       do{
-        var drawnCard = Math.floor((Math.random() * 100)+1);
-      } while(drawnCards.indexOf(drawnCards) != -1)
+        drawnCard = Math.floor((Math.random() * 100)+1);
+      } while(drawnCards.indexOf(drawnCard) != -1)
 
       drawnCards.push(drawnCard);
+      //console.log(`Drawn cards upto now:`);
+      //console.log(drawnCards);
       tObj.push(drawnCard);
     }
     
   }
 
+  console.log("=-=-=-=-=-=-=-=-")
+  console.log("Handed out all cards");
+  console.log("=-=-=-=-=-=-=-=-")
+
+  //Loop over the players and sort their cards:
+  for (player in playerCards){
+    playerCards[player] =  playerCards[player].sort((a,b) => a - b);
+  }
+
   console.log(playerCards);
 }
 
-// socket.on('movement', function(data) {
-//     var player = players[socket.id] || {};
-//     if (data.left) {
-//       player.x -= 5;
-//     }
-//     if (data.up) {
-//       player.y -= 5;
-//     }
-//     if (data.right) {
-//       player.x += 5;
-//     }
-//     if (data.down) {
-//       player.y += 5;
-//     }
-//   });
-// });
+var sendCardsToPlayers = function(){
 
-// setInterval(function() {
-//     io.sockets.emit('state', players);
-//   }, 1000 / 60);
+  for (player in playerCards){
+    io.to(player).emit("cards", playerCards[player]);
+    //console.log(`sending to player: ${player}, cards:`)
+    //console.log(playerCards[player]);
+
+  }
+}
