@@ -68,7 +68,7 @@ socket.on('players', function (data) {
         if (data[player].username == "")
             continue;
 
-        htmlText += `<li>${data[player].username}</li>`;
+        htmlText += `<li ${!data[player].ready ? 'class="notReady"' : ""}>${data[player].username}</li>`;
     }
     document.getElementById("players").innerHTML = htmlText;
 });
@@ -144,7 +144,6 @@ function drawOtherCardsOnCanvas(otherCards){
             drawCardRegion(canvas.width - 20, 50, 100, canvas.height - 100, otherCards[1], cardColors[1]);
             drawCardRegion(50, 0, canvas.width - 100, 100, otherCards[2], cardColors[2]);
             break;
-        //TO DO - continue for 5, 6 and 7
         case 4:
             drawCardRegion(0, 50, 100, canvas.height - 100, otherCards[0], cardColors[0]);
             drawCardRegion(canvas.width - 20, 50, 100, canvas.height - 100, otherCards[1], cardColors[1]);

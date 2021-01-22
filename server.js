@@ -94,7 +94,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('start game', () => {
-        players[socket.id].ready = true;
+        
 
         var playersNotReady = 0;
         var totalPlayers =0
@@ -106,27 +106,37 @@ io.on('connection', function(socket) {
           return;
         }
 
-        //Object.filter(players,x => !x.ready).length;
+        players[socket.id].ready = true;
+
         for (player in players){
           if (players[player].username != ""){
             totalPlayers++;
 
-            if (!players[player].ready)
+            if (!players[player].ready){
+              console.log(`Player not ready: ${players[player].username}`);
               playersNotReady++;
+            }
           }
         }
 
-        // if (totalPlayers <= 1){
-        //   io.sockets.emit("message", `You can't play the game on your own. Wait for others to connect`);
-        //   return;
-        // }
+         if (totalPlayers <= 1){
+           io.sockets.emit("message", `You can't play the game on your own. Wait for others to connect`);
+           players[socket.id].ready = false;
+           return;
+         }
+
+        
 
         if (playersNotReady != 0 ){
           io.sockets.emit("message", playersNotReady + " not ready");
+          io.sockets.emit('players',players);
           return;
         }
 
         io.sockets.emit("message", "Everyone ready!");
+
+        io.sockets.emit('players',players);
+
         initGame();
 
         //Let everyone know we are starting!
@@ -135,6 +145,7 @@ io.on('connection', function(socket) {
         sendCardsToPlayers();
 
         
+        //countPlayers();
         
     })
 
