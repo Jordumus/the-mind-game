@@ -18,7 +18,7 @@ const cGAMESTATES = {
     "WAITING_READY": 7 //You are ready, others are not..
 }
 
-var gameState = 6;
+var gameState = 0;
 
 var socket = io();
 socket.on('message', function (data) {
