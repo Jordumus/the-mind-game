@@ -250,13 +250,22 @@ function canvasMouseMove(e) {
 }
 
 function drawReadyButton(){
+    
     context.cleanCenter();
     
+    context.save();
+
+    context.font = "75px comic sans";
+
+    context.fillText("Ready?");
+    context.restore();
+
 }
 
 function canvasMouseClick(e) {
 
     if (gameState == cGAMESTATES.LOST ||gameState == cGAMESTATES.WON){
+        
         changeGameState(cGAMESTATES.WAITING_READY);
         
 

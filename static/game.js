@@ -9,12 +9,12 @@ var cardColors = [
 ]
 
 const cGAMESTATES = {
-    "LOBBY" : 1,
-"STARTING" :2,
-"INGAME" : 3,
-"LOST" : 4,
-"WON": 5,
-"WAITING_READY": 6
+    "LOBBY": 1,
+    "STARTING": 2,
+    "INGAME": 3,
+    "LOST": 4,
+    "WON": 5,
+    "WAITING_READY": 6
 }
 
 var gameState;

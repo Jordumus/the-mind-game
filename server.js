@@ -68,9 +68,9 @@ io.on('connection', function (socket) {
 
     countPlayers();
     if (players[socket.id])
-      io.sockets.emit("message", `Player: ${players[socket.id].username} disconnected. \n players: ${connectedPlayers}`);
+      io.sockets.emit("message", `Player: ${players[socket.id].username} disconnected. \n players: ${connectedPlayers-1}`);
     else
-      io.sockets.emit("message", `Unknown player disconnected. \n players: ${connectedPlayers}`);
+      io.sockets.emit("message", `Unknown player disconnected. \n players: ${connectedPlayers-1}`);
 
     delete players[socket.id];
 
