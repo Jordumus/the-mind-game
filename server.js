@@ -105,7 +105,7 @@ io.on('connection', function (socket) {
     }
 
 
-    players[socket.id].username = username;
+    players[socket.id].username = username.splice(0,10);
     players[socket.id].ready = false;
 
     countPlayers();
