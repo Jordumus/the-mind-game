@@ -148,7 +148,7 @@ io.on('connection', function (socket) {
     }
 
     if (totalPlayers <= 1) {
-      io.sockets.emit("error", `You can't play the game on your own. Wait for others to connect`);
+      io.sockets.emit("error", `Wait for others to connect..`);
       players[socket.id].ready = false;
       return;
     }
@@ -376,7 +376,7 @@ var sendCardsToPlayers = function () {
       if (subplayer == player)
         continue;
 
-      data["others"].push(playerCards[subplayer].length);
+      data["others"].push({name: player[subplayer].username, cards: playerCards[subplayer].length});
     }
 
 

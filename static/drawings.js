@@ -87,13 +87,15 @@ function drawOtherCardsOnCanvas(otherCards) {
     }
 }
 
-function drawCardRegion(x, y, width, height, amount, color) {
+function drawCardRegion(x, y, width, height, player, color) {
 
     var interspace = 10;
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
 
     var horizontal = (width > height);
+
+    var amount = player.cards;
 
     var usefulSize = (horizontal) ? width : height;
 
@@ -119,6 +121,8 @@ function drawCardRegion(x, y, width, height, amount, color) {
         startPoint += cardWidth + interspace;
 
     }
+
+    //context.fillText(player.name, (x == 0) ? 50: canvas.width - 50
 
 
 }
