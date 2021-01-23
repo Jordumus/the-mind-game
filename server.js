@@ -144,7 +144,9 @@ io.on('connection', function (socket) {
 
       io.sockets.emit("message", playersNotReady + " not ready");
       io.sockets.emit('players', players);
-      //Addition by Vince
+      io.to(socket.id).emit("waiting on others");
+
+
       if (playersNotReady == 1){
 
         for (ourPlayer in players) {
@@ -152,10 +154,6 @@ io.on('connection', function (socket) {
             io.to(ourPlayer).emit("warning", "We are waiting on you, ready up!");
 
         }
-        //if (players[socket.id].ready == false){
-          
-            //io.sockets.emit("message", "We are waiting on you, ready up!");
-        //}
     }
       return;
     }

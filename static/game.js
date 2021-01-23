@@ -71,6 +71,10 @@ socket.on('game started', function () {
     //readyAnimation();
 });
 
+socket.on("waiting on others", function() {
+    changeGameState(cGAMESTATES.WAITING_READY);
+})
+
 socket.on('round over', function () {
     //document.getElementById("btnReady").hidden = false;
 })
