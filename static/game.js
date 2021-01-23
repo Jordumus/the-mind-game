@@ -14,10 +14,11 @@ const cGAMESTATES = {
     "INGAME": 3,
     "LOST": 4,
     "WON": 5,
-    "WAITING_READY": 6
+    "WAITING_FOR_READY": 6, //You didn't click ready yet.
+    "WAITING_READY": 7 //You are ready, others are not..
 }
 
-var gameState;
+var gameState = 6;
 
 var socket = io();
 socket.on('message', function (data) {
@@ -114,6 +115,7 @@ function sendUsername() {
 
     var button = document.getElementById("username");
     socket.emit('username', button.value);
+    changeGameState(cGAMESTATES.WAITING_FOR_READY);
 }
 
 function sendReady() {
@@ -160,6 +162,12 @@ function changeGameState(newState) {
             case cGAMESTATES.WON:
             document.getElementById("btnReady").hidden = false;
 
+            case cGAMESTATES.WAITING_FOR_READY:
+                drawReadyButton();
                 break;
+
+                case cGAMESTATES.WAITING_READY:
+                    drawWaiting();
+                    break;
     }
 }
