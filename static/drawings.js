@@ -137,6 +137,7 @@ function readyAnimation() {
         context.font = currentSize + "px arial";
         context.textAlign = "center";
 
+        context.fillStyle = "#F50";
 
         context.fillText(currentCount, canvas.width / 2, (canvas.height / 2) /*- (currentSize / 2)*/)
 
