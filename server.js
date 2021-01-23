@@ -159,7 +159,9 @@ io.on('connection', function (socket) {
 
       io.sockets.emit("message", playersNotReady + " not ready");
       io.sockets.emit('players', players);
-      io.to(socket.id).emit("waiting on others");
+      
+      if (players[socket.id].ready)
+        io.to(socket.id).emit("waiting on others");
 
 
       if (playersNotReady == 1){
@@ -190,6 +192,12 @@ io.on('connection', function (socket) {
   })
 
   socket.on('card played', (card) => {
+
+    if (!playerCards[socket.id]){
+      io.to(socket.id).emit("error", "Something went wrong.. Whoops.");
+      return;
+    }
+
 
     //Check if this player has this card in his deck:
     if (playerCards[socket.id].indexOf(card) == -1)
