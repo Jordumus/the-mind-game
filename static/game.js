@@ -75,7 +75,10 @@ socket.on("waiting on others", function() {
     changeGameState(cGAMESTATES.WAITING_READY);
 })
 
-socket.on('round over', function () {
+socket.on('round won', function () {
+    changeGameState(cGAMESTATES.WON);
+    WriteTextMessage("Time for next round!", "warning");
+
     //document.getElementById("btnReady").hidden = false;
 })
 socket.on('round lost', function (data) {
@@ -159,13 +162,27 @@ function changeGameState(newState) {
         case cGAMESTATES.LOST:
             // document.getElementById("btnReady").hidden = true;
             // document.getElementById("btnReady").hidden = false;
-            document.getElementById("cards").innerHTML = "";
+            //document.getElementById("cards").innerHTML = "";
+            var coll = document.getElementsByClassName("playcard");
+            
+            while (coll[0]) {
+                coll[0].classList.add('startingGame')
+            }
+
+            setTimeout(() => {
+                changeGameState(cGAMESTATES.WAITING_FOR_READY);
+            }, 5000);
             break;
 
             case cGAMESTATES.WON:
+                setTimeout(() => {
+                    changeGameState(cGAMESTATES.WAITING_FOR_READY);
+                }, 5000);
             //document.getElementById("btnReady").hidden = false;
 break;
             case cGAMESTATES.WAITING_FOR_READY:
+                document.getElementById("cards").innerHTML = "";
+
                 drawReadyButton();
                 break;
 

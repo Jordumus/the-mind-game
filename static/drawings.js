@@ -308,8 +308,11 @@ function canvasMouseClick(e) {
 
     if (gameState == cGAMESTATES.LOST ||gameState == cGAMESTATES.WON)
         changeGameState(cGAMESTATES.WAITING_FOR_READY);
-    else if (gameState == cGAMESTATES.WAITING_FOR_READY)
+    else if (gameState == cGAMESTATES.WAITING_FOR_READY){
+        
         socket.emit('start game');
+        readyHovered = false;
+    }
     
 }
 

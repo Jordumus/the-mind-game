@@ -215,8 +215,8 @@ io.on('connection', function (socket) {
     //And also if this round is won..
     if (playedCards.length == drawnCards.length) {
       //Let everyone know the round is over
-      io.sockets.emit("round over", "Let's go next!");
-      console.log("round over");
+      io.sockets.emit("round won", "Let's go next!");
+      console.log("round won");
 
       endRound();
 
