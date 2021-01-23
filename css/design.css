@@ -85,7 +85,7 @@ body {
     font-weight: bold;
   }
 
-  .readyButton {
+  /* .readyButton {
     width: 150px;
     height: 100px;
     background-color: rgb(101, 101, 212);
@@ -101,7 +101,7 @@ body {
     color:#FFF;
     text-align:center;
     transition: all 0.15s;
-  }
+  } */
 
   .notReady {
     color: red;

@@ -72,7 +72,7 @@ socket.on('game started', function () {
 });
 
 socket.on('round over', function () {
-    document.getElementById("btnReady").hidden = false;
+    //document.getElementById("btnReady").hidden = false;
 })
 socket.on('round lost', function (data) {
     document.getElementById("message").innerText = data;
@@ -141,7 +141,7 @@ function changeGameState(newState) {
             break;
         case cGAMESTATES.STARTING:
             readyAnimation();
-            document.getElementById("btnReady").hidden = true;
+            //document.getElementById("btnReady").hidden = true;
             break;
         case cGAMESTATES.INGAME:
             cleanCenter();
@@ -154,14 +154,14 @@ function changeGameState(newState) {
             
             break;
         case cGAMESTATES.LOST:
-            document.getElementById("btnReady").hidden = true;
-            document.getElementById("btnReady").hidden = false;
+            // document.getElementById("btnReady").hidden = true;
+            // document.getElementById("btnReady").hidden = false;
             document.getElementById("cards").innerHTML = "";
             break;
 
             case cGAMESTATES.WON:
-            document.getElementById("btnReady").hidden = false;
-
+            //document.getElementById("btnReady").hidden = false;
+break;
             case cGAMESTATES.WAITING_FOR_READY:
                 drawReadyButton();
                 break;
