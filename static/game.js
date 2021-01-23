@@ -18,6 +18,7 @@ const cGAMESTATES = {
     "WAITING_READY": 7 //You are ready, others are not..
 }
 
+var restartTimeout;
 var gameState = 0;
 
 var socket = io();
@@ -56,8 +57,8 @@ socket.on('cards', function (data) {
                 ${data[card]}</button>`;*/
 
         newHtmlString += `<div 
-            class="playcard ${(first)? "" : "cardDisabled"} ${(gameState == cGAMESTATES.STARTING) ? "startingGame" : ""}" 
-            ${(first) ? 'onClick="sendCard('+ownCards[card]+')"':""}><p>${ownCards[card]}</p></div>`;
+            class="playcard ${(first) ? "" : "cardDisabled"} ${(gameState == cGAMESTATES.STARTING) ? "startingGame" : ""}" 
+            ${(first) ? 'onClick="sendCard(' + ownCards[card] + ')"' : ""}><p>${ownCards[card]}</p></div>`;
 
         first = false;
     }
@@ -66,22 +67,28 @@ socket.on('cards', function (data) {
 
     //Draw other cards.
     drawOtherCardsOnCanvas(otherCards);
-    
+
 });
 
 socket.on('game started', function () {
-    
+
     cleanCanvas();
     changeGameState(cGAMESTATES.STARTING);
     //gameState = cGAMESTATES.STARTING;
     //readyAnimation();
 });
 
-socket.on('round over', function () {
+socket.on("waiting on others", function () {
+    changeGameState(cGAMESTATES.WAITING_READY);
+})
+
+socket.on('round won', function () {
+    changeGameState(cGAMESTATES.WON);
+    WriteTextMessage("Time for next round!", "warning");
+
     //document.getElementById("btnReady").hidden = false;
 })
 socket.on('round lost', function (data) {
-    document.getElementById("message").innerText = data;
     WriteTextMessage(data, "warning");
     changeGameState(cGAMESTATES.LOST);
 });
@@ -110,7 +117,7 @@ socket.on("card played", function (data) {
     //document.getElementById("lastCard").innerText = data.card;
     drawCardOnCanvas(data.card, data.lost);
 
-    
+
 
 
 });
@@ -141,8 +148,7 @@ function changeGameState(newState) {
 
     gameState = newState;
 
-    switch (gameState)
-    {
+    switch (gameState) {
         case cGAMESTATES.LOBBY:
             break;
         case cGAMESTATES.STARTING:
@@ -152,28 +158,45 @@ function changeGameState(newState) {
         case cGAMESTATES.INGAME:
             cleanCenter();
             var coll = document.getElementsByClassName("startingGame");
-            
+
             while (coll[0]) {
                 coll[0].classList.remove('startingGame')
             }
 
-            
+
             break;
         case cGAMESTATES.LOST:
             // document.getElementById("btnReady").hidden = true;
             // document.getElementById("btnReady").hidden = false;
-            document.getElementById("cards").innerHTML = "";
+            //document.getElementById("cards").innerHTML = "";
+            var coll = document.getElementsByClassName("playcard");
+
+            for (var i = 0; i < coll.length; i++) { //(coll[0]) {
+                coll[i].classList.add('startingGame');
+            }
+
+            restartTimeout = setTimeout(() => {
+                changeGameState(cGAMESTATES.WAITING_FOR_READY);
+            }, 5000);
+
             break;
 
-            case cGAMESTATES.WON:
-            //document.getElementById("btnReady").hidden = false;
-break;
-            case cGAMESTATES.WAITING_FOR_READY:
-                drawReadyButton();
-                break;
+        case cGAMESTATES.WON:
+            restartTimeout = setTimeout(() => {
+                changeGameState(cGAMESTATES.WAITING_FOR_READY);
+            }, 5000);
 
-                case cGAMESTATES.WAITING_READY:
-                    drawWaiting();
-                    break;
+            
+            //document.getElementById("btnReady").hidden = false;
+            break;
+        case cGAMESTATES.WAITING_FOR_READY:
+            document.getElementById("cards").innerHTML = "";
+
+            drawReadyButton();
+            break;
+
+        case cGAMESTATES.WAITING_READY:
+            drawWaiting();
+            break;
     }
 }

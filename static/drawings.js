@@ -99,13 +99,15 @@ function drawOtherCardsOnCanvas(otherCards) {
     }
 }
 
-function drawCardRegion(x, y, width, height, amount, color) {
+function drawCardRegion(x, y, width, height, player, color) {
 
     var interspace = 10;
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
 
     var horizontal = (width > height);
+
+    var amount = player.cards;
 
     var usefulSize = (horizontal) ? width : height;
 
@@ -132,6 +134,8 @@ function drawCardRegion(x, y, width, height, amount, color) {
 
     }
 
+    //context.fillText(player.name, (x == 0) ? 50: canvas.width - 50
+
 
 }
 
@@ -149,6 +153,7 @@ function readyAnimation() {
         context.font = currentSize + "px arial";
         context.textAlign = "center";
 
+        context.fillStyle = "#F50";
 
         context.fillText(currentCount, canvas.width / 2, (canvas.height / 2) /*- (currentSize / 2)*/)
 
@@ -319,10 +324,15 @@ function drawWaiting(){
 
 function canvasMouseClick(e) {
 
-    if (gameState == cGAMESTATES.LOST ||gameState == cGAMESTATES.WON)
+    if (gameState == cGAMESTATES.LOST ||gameState == cGAMESTATES.WON){
         changeGameState(cGAMESTATES.WAITING_FOR_READY);
-    else if (gameState == cGAMESTATES.WAITING_FOR_READY)
+    }
+    else if (gameState == cGAMESTATES.WAITING_FOR_READY){
+        
+        clearTimeout(restartTimeout);
         socket.emit('start game');
+        readyHovered = false;
+    }
     
 }
 

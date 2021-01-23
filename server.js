@@ -95,6 +95,16 @@ io.on('connection', function (socket) {
   //New username set
   socket.on('username', (username) => {
     socket.username = username;
+
+    if (!players[socket.id]){
+
+      players[socket.id] = {
+        username: "",
+        ready: false
+      };
+    }
+
+
     players[socket.id].username = username;
     players[socket.id].ready = false;
 
@@ -109,6 +119,11 @@ io.on('connection', function (socket) {
 
   socket.on('start game', () => {
 
+    //Server reboot: boop boop
+    if (!players[socket.id]){
+      io.to(socket.id).emit("error", "Server reset, please F5.");
+      return;
+    }
 
     var playersNotReady = 0;
     var totalPlayers = 0;
@@ -133,7 +148,7 @@ io.on('connection', function (socket) {
     }
 
     if (totalPlayers <= 1) {
-      io.sockets.emit("error", `You can't play the game on your own. Wait for others to connect`);
+      io.sockets.emit("error", `Wait for others to connect..`);
       players[socket.id].ready = false;
       return;
     }
@@ -144,7 +159,11 @@ io.on('connection', function (socket) {
 
       io.sockets.emit("message", playersNotReady + " not ready");
       io.sockets.emit('players', players);
-      //Addition by Vince
+      
+      if (players[socket.id].ready)
+        io.to(socket.id).emit("waiting on others");
+
+
       if (playersNotReady == 1){
 
         for (ourPlayer in players) {
@@ -177,6 +196,12 @@ io.on('connection', function (socket) {
   })
 
   socket.on('card played', (card) => {
+
+    if (!playerCards[socket.id]){
+      io.to(socket.id).emit("error", "Something went wrong.. Whoops.");
+      return;
+    }
+
 
     //Check if this player has this card in his deck:
     if (playerCards[socket.id].indexOf(card) == -1)
@@ -217,8 +242,8 @@ io.on('connection', function (socket) {
     //And also if this round is won..
     if (playedCards.length == drawnCards.length) {
       //Let everyone know the round is over
-      io.sockets.emit("round over", "Let's go next!");
-      console.log("round over");
+      io.sockets.emit("round won", "Let's go next!");
+      console.log("round won");
 
       endRound();
 
@@ -351,7 +376,7 @@ var sendCardsToPlayers = function () {
       if (subplayer == player)
         continue;
 
-      data["others"].push(playerCards[subplayer].length);
+      data["others"].push({name: player[subplayer].username, cards: playerCards[subplayer].length});
     }
 
 
