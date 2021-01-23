@@ -2,8 +2,11 @@ var readyTimer;
 var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d');
 
+var messageQueue = [];
+var messageTimer;
 
-canvas.onmousemove = canvasMouseMove
+canvas.onmousemove = canvasMouseMove;
+canvas.onmouseup = canvasMouseClick;
 
 function degrees_to_radians(degrees) {
     var pi = Math.PI;
@@ -22,6 +25,7 @@ function cleanCenter() {
 }
 
 function cleanBottom() {
+    
     context.clearRect(100,canvas.height - 100, canvas.width - 200, 100);
 }
 
@@ -68,7 +72,7 @@ function drawOtherCardsOnCanvas(otherCards) {
 
             drawCardRegion(50, 0, canvas.width - 100, 100, otherCards[4], cardColors[4]);
             break;
-
+            
         case 6:
             drawCardRegion(0, 50, 100, (canvas.height - 100) / 2, otherCards[0], cardColors[0]);
             drawCardRegion(0, 50 + ((canvas.height - 100) / 2), 100, (canvas.height - 100) / 2, otherCards[1], cardColors[1]);
@@ -161,13 +165,6 @@ function drawCardOnCanvas(cardnumber, lost) {
     //Check for lost
     lost = lost ?? false;
 
-    //temp:
-    //cardnumber = Math.floor((Math.random()*100) + 1);
-
-    var canvas = document.getElementById('canvas');
-    var context = canvas.getContext('2d');
-
-
     var width = 150;
     var height = 250;
 
@@ -249,6 +246,20 @@ function canvasMouseMove(e) {
             canvas.style.cursor = "pointer";
         else
             canvas.style.cursor = "default";
+    }
+}
+
+function drawReadyButton(){
+    context.cleanCenter();
+    
+}
+
+function canvasMouseClick(e) {
+
+    if (gameState == cGAMESTATES.LOST ||gameState == cGAMESTATES.WON){
+        changeGameState(cGAMESTATES.WAITING_READY);
+        
+
     }
 }
 
