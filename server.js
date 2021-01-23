@@ -95,6 +95,16 @@ io.on('connection', function (socket) {
   //New username set
   socket.on('username', (username) => {
     socket.username = username;
+
+    if (!players[socket.id]){
+
+      players[socket.id] = {
+        username: "",
+        ready: false
+      };
+    }
+
+
     players[socket.id].username = username;
     players[socket.id].ready = false;
 
@@ -109,6 +119,11 @@ io.on('connection', function (socket) {
 
   socket.on('start game', () => {
 
+    //Server reboot: boop boop
+    if (!players[socket.id]){
+      io.to(socket.id).emit("error", "Server reset, please F5.");
+      return;
+    }
 
     var playersNotReady = 0;
     var totalPlayers = 0;
