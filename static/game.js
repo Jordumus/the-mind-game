@@ -22,7 +22,7 @@ var gameState;
 var socket = io();
 socket.on('message', function (data) {
     console.log(data);
-    document.getElementById("message").innerText = data;
+    //document.getElementById("message").innerText = data;
     WriteTextMessage(data);
 });
 
@@ -147,7 +147,7 @@ function changeGameState(newState) {
             
             while (coll[0]) {
                 coll[0].classList.remove('startingGame')
-              }
+            }
 
             
             break;
