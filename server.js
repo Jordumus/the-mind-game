@@ -114,7 +114,7 @@ io.on('connection', function (socket) {
     //connectedPlayers++;
     
 
-    io.sockets.emit("message", `Player: ${username} connected. players: ${connectedPlayers}`);
+    io.sockets.emit("message", `Player: ${players[socket.id].username} connected. players: ${connectedPlayers}`);
   });
 
   socket.on('start game', () => {
