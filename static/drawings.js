@@ -38,7 +38,7 @@ function drawOtherCardsOnCanvas(otherCards) {
     context.clearRect(0, 0, canvas.width, 100);
     context.clearRect(0, 0, 100, canvas.height);
     context.clearRect(canvas.width - 100, 0, 100, canvas.height);
-    context.clearRect(0, canvas.height - 100, canvas.width, 100);
+    //context.clearRect(0, canvas.height - 100, canvas.width, 100);
 
     var nmbOtherPlayers = otherCards.length;
 
@@ -172,12 +172,11 @@ function drawCardOnCanvas(cardnumber, lost) {
     context.fillStyle = "rgba(255, 255, 255, 0.5)";
     context.fillRect(0, 0, canvas.width, canvas.height);
 
-    if (lost){
+    if (lost)
         context.fillStyle = '#DF1141';
-    } else{
+    else
         context.fillStyle = '#112F41';
-        WriteTextMessage("Hallo, Ik ben Vince");
-    }
+        
     //Calculate random rotation between -15° and 15°
     var rotation = Math.floor((Math.random() * 300) - 150);
     rotation /= 10;
