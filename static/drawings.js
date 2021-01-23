@@ -233,6 +233,8 @@ function WriteTextMessage(text,type) {
         context.fillStyle = "#000";
     else if (type == "warning")
         context.fillStyle = "#AA0";
+    else if (type == "error")
+        context.fillStyle = "#F00";
         
     context.textAlign = "center";
 
