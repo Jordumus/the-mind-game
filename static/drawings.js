@@ -27,7 +27,19 @@ function cleanCenter() {
 
 function cleanBottom() {
     
-    context.clearRect(100,canvas.height - 100, canvas.width - 200, 100);
+    context.clearRect(0,canvas.height - 100, canvas.width, 100);
+    var width = 0;
+    var height = 0;
+
+    //small layer
+    context.fillStyle = "rgba(100, 100, 255, 0.5)";
+    context.fillRect(0, canvas.height - 85, canvas.width, 50);
+    context.beginPath();
+    //context.strokeStyle = "rgba(4, 0, 255, 1.0)"; Doner blauw
+    context.strokeStyle = "rgba(0, 0, 255, 1.0)";
+
+    context.rect(0, canvas.height - 85, canvas.width, 50);
+    context.stroke();
 }
 
 function drawOtherCardsOnCanvas(otherCards) {
@@ -171,7 +183,7 @@ function drawCardOnCanvas(cardnumber, lost) {
 
     //small layer
     context.fillStyle = "rgba(255, 255, 255, 0.5)";
-    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillRect(100, 100, canvas.width-200, canvas.height-200);
 
     if (lost)
         context.fillStyle = '#DF1141';
@@ -237,7 +249,7 @@ function WriteTextMessage(text,type) {
         
     context.textAlign = "center";
 
-    context.fillText(text, canvas.width / 2, canvas.height - 50, canvas.width - 200);
+    context.fillText(text, canvas.width / 2, canvas.height - 50, canvas.width - 100);
     context.restore();
 }
 
