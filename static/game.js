@@ -79,7 +79,6 @@ socket.on('round over', function () {
     //document.getElementById("btnReady").hidden = false;
 })
 socket.on('round lost', function (data) {
-    document.getElementById("message").innerText = data;
     WriteTextMessage(data, "warning");
     changeGameState(cGAMESTATES.LOST);
 });
