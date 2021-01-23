@@ -132,11 +132,11 @@ io.on('connection', function (socket) {
       }
     }
 
-    //if (totalPlayers <= 1) {
-    //  io.sockets.emit("message", `You can't play the game on your own. Wait for others to connect`);
-    //  players[socket.id].ready = false;
-    //  return;
-    //}
+    if (totalPlayers <= 1) {
+      io.sockets.emit("error", `You can't play the game on your own. Wait for others to connect`);
+      players[socket.id].ready = false;
+      return;
+    }
 
 
 
