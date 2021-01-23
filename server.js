@@ -56,16 +56,29 @@ io.on('connection', function(socket) {
     //Handle the disconnection of a player:
     //See reasons: https://socket.io/docs/v3/server-socket-instance/
     socket.on("disconnect", (reason) => {
-        players[socket.id] = {
+         /*= {
           username: "",
           ready: false
-      };
+      };*/
 
+      if (gameBusy && players[socket.id].ready)
+      {
+        endRound();
+        roundLost();
+      }
+        
+      countPlayers();
+      if (players[socket.id])
         io.sockets.emit("message", `Player: ${players[socket.id].username} disconnected. \n players: ${connectedPlayers}`);
-        countPlayers();
+      else
+      io.sockets.emit("message", `Unknown player disconnected. \n players: ${connectedPlayers}`);
+      
+      delete players[socket.id] ;
+
+        
         //connectedPlayers--;
         //io.sockets.emit("message", "players: " + connectedPlayers);
-      });
+    });
 
     socket.on('new player', function() {
         //Check if game is already happening and let player wait if so
