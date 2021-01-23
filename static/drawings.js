@@ -1,4 +1,5 @@
 var readyTimer;
+var readyHovered = false;
 var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d');
 
@@ -242,30 +243,82 @@ function WriteTextMessage(text,type) {
 
 function canvasMouseMove(e) {
 
-    if (gameState == cGAMESTATES.WAITING_READY){
+    //readyHovered = false;
+
+    if (gameState == cGAMESTATES.WAITING_FOR_READY){
         
-        if (cursorCheck(100, 100, canvas.width - 200, canvas.height - 200))
+        if (cursorCheck(e, 100, 100, canvas.width - 200, canvas.height - 200)){
             canvas.style.cursor = "pointer";
-        else
+
+            if (!readyHovered){
+                readyHovered = true;
+                drawReadyButton();
+            }
+            
+
+        }
+        else{
             canvas.style.cursor = "default";
+            if (readyHovered){
+                readyHovered = false;
+                drawReadyButton();
+            }
+        }
     }
 }
 
 function drawReadyButton(){
-    context.cleanCenter();
     
+    cleanCenter();
+    
+    context.save();
+
+    context.font = "75px comic sans";
+    context.textAlign = "center";
+
+    if (!readyHovered){
+        context.fillStyle = "#D00";
+        context.fillText("Ready?", canvas.width / 2, (canvas.height / 2) - 30, canvas.width - 200);
+    }
+    else{
+        context.fillStyle = "#0D0";
+        context.fillText("Ready!", canvas.width / 2, (canvas.height / 2) - 30, canvas.width - 200);
+    }
+    context.restore();
+
 }
+
+function drawWaiting(){
+    
+    cleanCenter();
+    
+    context.save();
+
+    context.font = "75px comic sans";
+    context.textAlign = "center";
+
+    context.fillStyle = "#DD0";
+    context.fillText("Waiting...", canvas.width / 2, (canvas.height / 2) - 30, canvas.width - 200);
+    
+    context.restore();
+
+}
+
 
 function canvasMouseClick(e) {
 
-    if (gameState == cGAMESTATES.LOST ||gameState == cGAMESTATES.WON){
-        changeGameState(cGAMESTATES.WAITING_READY);
-        
-
-    }
+    if (gameState == cGAMESTATES.LOST ||gameState == cGAMESTATES.WON)
+        changeGameState(cGAMESTATES.WAITING_FOR_READY);
+    else if (gameState == cGAMESTATES.WAITING_FOR_READY)
+        socket.emit('start game');
+    
 }
 
-function cursorCheck(x,y,width,height){
+function cursorCheck(e, x,y,width,height){
+
+    var BB=canvas.getBoundingClientRect();
+    var offsetX=BB.left;
+    var offsetY=BB.top;        
 
     var mouseX=parseInt(e.clientX-offsetX);
     var mouseY=parseInt(e.clientY-offsetY);

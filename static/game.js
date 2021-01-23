@@ -14,10 +14,11 @@ const cGAMESTATES = {
     "INGAME": 3,
     "LOST": 4,
     "WON": 5,
-    "WAITING_READY": 6
+    "WAITING_FOR_READY": 6, //You didn't click ready yet.
+    "WAITING_READY": 7 //You are ready, others are not..
 }
 
-var gameState;
+var gameState = 0;
 
 var socket = io();
 socket.on('message', function (data) {
@@ -77,7 +78,7 @@ socket.on('game started', function () {
 });
 
 socket.on('round over', function () {
-    document.getElementById("btnReady").hidden = false;
+    //document.getElementById("btnReady").hidden = false;
 })
 socket.on('round lost', function (data) {
     document.getElementById("message").innerText = data;
@@ -120,6 +121,7 @@ function sendUsername() {
 
     var button = document.getElementById("username");
     socket.emit('username', button.value);
+    changeGameState(cGAMESTATES.WAITING_FOR_READY);
 }
 
 function sendReady() {
@@ -145,7 +147,7 @@ function changeGameState(newState) {
             break;
         case cGAMESTATES.STARTING:
             readyAnimation();
-            document.getElementById("btnReady").hidden = true;
+            //document.getElementById("btnReady").hidden = true;
             break;
         case cGAMESTATES.INGAME:
             cleanCenter();
@@ -158,14 +160,20 @@ function changeGameState(newState) {
             
             break;
         case cGAMESTATES.LOST:
-            document.getElementById("btnReady").hidden = true;
-            document.getElementById("btnReady").hidden = false;
+            // document.getElementById("btnReady").hidden = true;
+            // document.getElementById("btnReady").hidden = false;
             document.getElementById("cards").innerHTML = "";
             break;
 
             case cGAMESTATES.WON:
-            document.getElementById("btnReady").hidden = false;
-
+            //document.getElementById("btnReady").hidden = false;
+break;
+            case cGAMESTATES.WAITING_FOR_READY:
+                drawReadyButton();
                 break;
+
+                case cGAMESTATES.WAITING_READY:
+                    drawWaiting();
+                    break;
     }
 }
