@@ -115,7 +115,7 @@ io.on('connection', function (socket) {
 
     //We can't start if a game is already in progress:
     if (gameBusy) {
-      io.to(socket.id).emit("message", "Game already in progress");
+      io.to(socket.id).emit("error", "Game already in progress");
       return;
     }
 
@@ -132,11 +132,11 @@ io.on('connection', function (socket) {
       }
     }
 
-    if (totalPlayers <= 1) {
-      io.sockets.emit("message", `You can't play the game on your own. Wait for others to connect`);
-      players[socket.id].ready = false;
-      return;
-    }
+    //if (totalPlayers <= 1) {
+    //  io.sockets.emit("message", `You can't play the game on your own. Wait for others to connect`);
+    //  players[socket.id].ready = false;
+    //  return;
+    //}
 
 
 
@@ -149,13 +149,9 @@ io.on('connection', function (socket) {
 
         for (ourPlayer in players) {
           if (!players[ourPlayer].ready)
-            io.to(ourPlayer).emit("warning", "We are waiting on you, ready up!");
+            io.to(ourPlayer).emit("error", "We are waiting on you, ready up!");
 
         }
-        //if (players[socket.id].ready == false){
-          
-            //io.sockets.emit("message", "We are waiting on you, ready up!");
-        //}
     }
       return;
     }
@@ -167,8 +163,12 @@ io.on('connection', function (socket) {
     initGame();
 
     //Let everyone know we are starting!
-    io.sockets.emit("game started", "Let's go!");
-
+    
+    for (ourPlayer in players) {
+      if (players[ourPlayer].ready)
+        io.to(ourPlayer).emit("game started");
+    
+    }
     sendCardsToPlayers();
 
 

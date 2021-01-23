@@ -32,6 +32,12 @@ socket.on('warning', function (data) {
     WriteTextMessage(data, "warning");
 });
 
+socket.on('error', function (data) {
+    //console.log(data);
+    //document.getElementById("message").innerText = data;
+    WriteTextMessage(data, "error");
+});
+
 socket.on('cards', function (data) {
 
     //Own cards first:
