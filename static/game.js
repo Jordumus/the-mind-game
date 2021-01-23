@@ -8,10 +8,22 @@ var cardColors = [
     "#E397FF",
 ]
 
+const cGAMESTATES = {
+    "LOBBY" : 1,
+"STARTING" :2,
+"INGAME" : 3,
+"LOST" : 4,
+"WON": 5,
+"WAITING_READY": 6
+}
+
+var gameState;
+
 var socket = io();
 socket.on('message', function (data) {
     console.log(data);
     document.getElementById("message").innerText = data;
+    WriteTextMessage(data);
 });
 
 socket.on('cards', function (data) {
@@ -31,7 +43,7 @@ socket.on('cards', function (data) {
                 ${data[card]}</button>`;*/
 
         newHtmlString += `<div 
-            class="playcard ${(first)? "" : "cardDisabled"}" 
+            class="playcard ${(first)? "" : "cardDisabled"} ${(gameState == cGAMESTATES.STARTING) ? "startingGame" : ""}" 
             ${(first) ? 'onClick="sendCard('+ownCards[card]+')"':""}><p>${ownCards[card]}</p></div>`;
 
         first = false;
@@ -45,8 +57,11 @@ socket.on('cards', function (data) {
 });
 
 socket.on('game started', function () {
-    document.getElementById("btnReady").hidden = true;
+    
     cleanCanvas();
+    changeGameState(cGAMESTATES.STARTING);
+    //gameState = cGAMESTATES.STARTING;
+    //readyAnimation();
 });
 
 socket.on('round over', function () {
@@ -54,8 +69,8 @@ socket.on('round over', function () {
 })
 socket.on('round lost', function (data) {
     document.getElementById("message").innerText = data;
-    document.getElementById("btnReady").hidden = false;
-    document.getElementById("cards").innerHTML = "";
+    WriteTextMessage(data, "warning");
+    changeGameState(cGAMESTATES.LOST);
 });
 
 socket.on('players', function (data) {
@@ -97,10 +112,48 @@ function sendUsername() {
 
 function sendReady() {
     socket.emit('start game');
+
 }
 
 function sendCard(cardNumber) {
 
+    if (gameState == cGAMESTATES.STARTING)
+        return;
+
     socket.emit('card played', cardNumber);
 }
 
+function changeGameState(newState) {
+
+    gameState = newState;
+
+    switch (gameState)
+    {
+        case cGAMESTATES.LOBBY:
+            break;
+        case cGAMESTATES.STARTING:
+            readyAnimation();
+            document.getElementById("btnReady").hidden = true;
+            break;
+        case cGAMESTATES.INGAME:
+            cleanCenter();
+            var coll = document.getElementsByClassName("startingGame");
+            
+            while (coll[0]) {
+                coll[0].classList.remove('startingGame')
+              }
+
+            
+            break;
+        case cGAMESTATES.LOST:
+            document.getElementById("btnReady").hidden = true;
+            document.getElementById("btnReady").hidden = false;
+            document.getElementById("cards").innerHTML = "";
+            break;
+
+            case cGAMESTATES.WON:
+            document.getElementById("btnReady").hidden = false;
+
+                break;
+    }
+}

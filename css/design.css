@@ -75,7 +75,7 @@ body {
     cursor: pointer;
   }
 
-  .cardDisabled {
+  .cardDisabled, .startingGame {
     cursor: auto;
     background-color: #DDD;
   }
